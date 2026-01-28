@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { FileUpload } from '@/components/FileUpload';
 
 interface CarrierData {
     legalName: string;
@@ -17,6 +18,11 @@ interface CarrierData {
     zip: string;
     status: string;
     equipmentTypes: string[];
+    documents?: {
+        w9?: string;
+        coi?: string;
+        mcAuthority?: string;
+    };
 }
 
 export default function CarrierDashboard() {
@@ -70,6 +76,27 @@ export default function CarrierDashboard() {
         }
     };
 
+    const handleDocumentUpload = async (docType: 'w9' | 'coi' | 'mcAuthority', url: string) => {
+        try {
+            const updatedDocuments = {
+                ...carrier?.documents,
+                [docType]: url,
+            };
+
+            await fetch('/api/carrier/profile', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ documents: updatedDocuments }),
+            });
+
+            setCarrier(prev => prev ? { ...prev, documents: updatedDocuments } : null);
+            alert('Document uploaded successfully!');
+        } catch (error) {
+            console.error('Failed to upload document:', error);
+            alert('Failed to upload document');
+        }
+    };
+
     if (loading || status === 'loading') {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -109,10 +136,10 @@ export default function CarrierDashboard() {
                 <div className="mb-6">
                     <div
                         className={`inline-block px-6 py-3 rounded-full font-bold ${carrier.status === 'approved'
-                                ? 'bg-green-100 text-green-800'
-                                : carrier.status === 'pending'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-red-100 text-red-800'
+                            ? 'bg-green-100 text-green-800'
+                            : carrier.status === 'pending'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
                             }`}
                     >
                         Status: {carrier.status.charAt(0).toUpperCase() + carrier.status.slice(1)}
@@ -233,6 +260,28 @@ export default function CarrierDashboard() {
                                 ))}
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* Documents Section */}
+                <div className="bg-white rounded-xl shadow-lg p-8 mt-6">
+                    <h2 className="text-2xl font-bold mb-6">Required Documents</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <FileUpload
+                            label="W-9 Form"
+                            currentFileUrl={carrier.documents?.w9}
+                            onUploadSuccess={(url) => handleDocumentUpload('w9', url)}
+                        />
+                        <FileUpload
+                            label="Certificate of Insurance (COI)"
+                            currentFileUrl={carrier.documents?.coi}
+                            onUploadSuccess={(url) => handleDocumentUpload('coi', url)}
+                        />
+                        <FileUpload
+                            label="MC Authority Letter"
+                            currentFileUrl={carrier.documents?.mcAuthority}
+                            onUploadSuccess={(url) => handleDocumentUpload('mcAuthority', url)}
+                        />
                     </div>
                 </div>
 

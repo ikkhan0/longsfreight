@@ -108,9 +108,13 @@ export default function HomePage() {
               </Link>
             </div>
             <div className="rounded-xl overflow-hidden shadow-2xl">
-              <div className="bg-gradient-to-br from-[#0077be]/20 to-[#003366]/20 h-96 flex items-center justify-center">
-                <span className="text-6xl">🚚</span>
-              </div>
+              <Image
+                src="/images/hero-truck.png"
+                alt="LFL Logistics Truck"
+                width={600}
+                height={400}
+                className="w-full h-96 object-cover"
+              />
             </div>
           </div>
         </div>

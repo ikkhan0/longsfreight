@@ -70,8 +70,23 @@ export async function POST(request: NextRequest) {
         const db = await getDatabase();
         console.log('✅ Database connection established');
 
+        // Check for duplicate unique fields in shippers collection
+        if (ein) {
+            const existingShipper = await db.collection('shippers').findOne({ ein: ein });
+            if (existingShipper) {
+                return NextResponse.json(
+                    {
+                        error: 'Duplicate entry',
+                        field: 'Tax ID / EIN',
+                        message: 'Tax ID / EIN already exists in our system. Please verify your information or contact support.'
+                    },
+                    { status: 409 }
+                );
+            }
+        }
+
         // Check if email already exists
-        const existingUser = await db.collection('users').findOne({ email: contactEmail });
+        const existingUser = await db.collection('users').findOne({ email: contactEmail.toLowerCase() });
         if (existingUser) {
             return NextResponse.json(
                 {

@@ -73,8 +73,36 @@ export async function POST(request: NextRequest) {
         const db = await getDatabase();
         console.log('✅ Database connection established');
 
+        // Check for duplicate unique fields in carriers collection
+        const existingCarrier = await db.collection('carriers').findOne({
+            $or: [
+                { mcNumber: mcNumber },
+                { dotNumber: dotNumber },
+                { ein: ein ? ein : null }
+            ].filter(condition => {
+                const value = Object.values(condition)[0];
+                return value !== null && value !== '' && value !== undefined;
+            })
+        });
+
+        if (existingCarrier) {
+            let duplicateField = '';
+            if (existingCarrier.mcNumber === mcNumber) duplicateField = 'MC Number';
+            else if (existingCarrier.dotNumber === dotNumber) duplicateField = 'DOT Number';
+            else if (ein && existingCarrier.ein === ein) duplicateField = 'Tax ID / EIN';
+
+            return NextResponse.json(
+                {
+                    error: 'Duplicate entry',
+                    field: duplicateField,
+                    message: `${duplicateField} already exists in our system. Please verify your information or contact support.`
+                },
+                { status: 409 }
+            );
+        }
+
         // Check if email already exists
-        const existingUser = await db.collection('users').findOne({ email: contactEmail });
+        const existingUser = await db.collection('users').findOne({ email: contactEmail.toLowerCase() });
         if (existingUser) {
             return NextResponse.json(
                 {

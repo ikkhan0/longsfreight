@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { FileUpload } from '@/components/FileUpload';
 
 interface ShipperData {
     legalName: string;
@@ -17,6 +18,11 @@ interface ShipperData {
     commodityType: string;
     monthlyVolume: string;
     preferredEquipment: string[];
+    documents?: {
+        w9?: string;
+        creditApp?: string;
+        shippingAgreement?: string;
+    };
 }
 
 export default function ShipperDashboard() {
@@ -70,6 +76,27 @@ export default function ShipperDashboard() {
         }
     };
 
+    const handleDocumentUpload = async (docType: 'w9' | 'creditApp' | 'shippingAgreement', url: string) => {
+        try {
+            const updatedDocuments = {
+                ...shipper?.documents,
+                [docType]: url,
+            };
+
+            await fetch('/api/shipper/profile', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ documents: updatedDocuments }),
+            });
+
+            setShipper(prev => prev ? { ...prev, documents: updatedDocuments } : null);
+            alert('Document uploaded successfully!');
+        } catch (error) {
+            console.error('Failed to upload document:', error);
+            alert('Failed to upload document');
+        }
+    };
+
     if (loading || status === 'loading') {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -109,10 +136,10 @@ export default function ShipperDashboard() {
                 <div className="mb-6">
                     <div
                         className={`inline-block px-6 py-3 rounded-full font-bold ${shipper.status === 'approved'
-                                ? 'bg-green-100 text-green-800'
-                                : shipper.status === 'pending'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-red-100 text-red-800'
+                            ? 'bg-green-100 text-green-800'
+                            : shipper.status === 'pending'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
                             }`}
                     >
                         Status: {shipper.status.charAt(0).toUpperCase() + shipper.status.slice(1)}
@@ -242,6 +269,28 @@ export default function ShipperDashboard() {
                                 ))}
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* Documents Section */}
+                <div className="bg-white rounded-xl shadow-lg p-8 mt-6">
+                    <h2 className="text-2xl font-bold mb-6">Required Documents</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <FileUpload
+                            label="W-9 Form"
+                            currentFileUrl={shipper.documents?.w9}
+                            onUploadSuccess={(url) => handleDocumentUpload('w9', url)}
+                        />
+                        <FileUpload
+                            label="Credit Application"
+                            currentFileUrl={shipper.documents?.creditApp}
+                            onUploadSuccess={(url) => handleDocumentUpload('creditApp', url)}
+                        />
+                        <FileUpload
+                            label="Signed Shipping Agreement"
+                            currentFileUrl={shipper.documents?.shippingAgreement}
+                            onUploadSuccess={(url) => handleDocumentUpload('shippingAgreement', url)}
+                        />
                     </div>
                 </div>
 

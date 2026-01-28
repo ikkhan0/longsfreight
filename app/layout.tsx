@@ -9,6 +9,19 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'LFL Logistics - Reliable Freight Transport & Logistics',
   description: 'Longs Freight Load Logistics LLC - Professional trucking and logistics services across North America. FTL, LTL, and expedited shipping solutions.',
+  keywords: 'freight logistics, trucking services, LTL shipping, FTL shipping, North America logistics, carrier services, shipping solutions',
+  authors: [{ name: 'LFL Logistics' }],
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
+  openGraph: {
+    title: 'LFL Logistics - Reliable Freight Transport & Logistics',
+    description: 'Professional trucking and logistics services across North America',
+    url: 'https://www.lfllogistics.com',
+    siteName: 'LFL Logistics',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
