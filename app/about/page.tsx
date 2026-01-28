@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import Navigation from '@/components/Navigation';
 
 export default function AboutPage() {
@@ -22,8 +23,14 @@ export default function AboutPage() {
                             Every shipment is handled with the utmost care, ensuring your freight arrives safely at its destination.
                         </p>
                     </div>
-                    <div className="bg-gradient-to-br from-blue-100 to-gray-200 rounded-xl h-96 flex items-center justify-center">
-                        <span className="text-8xl">🚛</span>
+                    <div className="rounded-xl overflow-hidden shadow-2xl">
+                        <Image
+                            src="/images/about-warehouse.png"
+                            alt="LFL Logistics Warehouse"
+                            width={600}
+                            height={400}
+                            className="w-full h-full object-cover"
+                        />
                     </div>
                 </div>
 
