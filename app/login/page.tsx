@@ -30,8 +30,21 @@ export default function LoginPage() {
                 return;
             }
 
-            // Redirect based on role (will be handled by middleware)
-            router.push('/dashboard');
+            // Fetch session to get user role
+            const response = await fetch('/api/auth/session');
+            const session = await response.json();
+
+            // Redirect based on role
+            if (session?.user?.role === 'admin') {
+                router.push('/admin');
+            } else if (session?.user?.role === 'carrier') {
+                router.push('/carrier-dashboard');
+            } else if (session?.user?.role === 'shipper') {
+                router.push('/shipper-dashboard');
+            } else {
+                router.push('/');
+            }
+
             router.refresh();
         } catch (err) {
             setError('An error occurred. Please try again.');
