@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { OnboardingStep } from '@/types';
+import { FileUpload } from '@/components/FileUpload';
 
 interface ShipperFormData {
     legalName: string;
@@ -20,12 +21,18 @@ interface ShipperFormData {
     averageValue: string;
     preferredEquipment: string[];
     password: string;
+    documents: {
+        w9?: string;
+        creditApp?: string;
+        shippingAgreement?: string;
+    };
 }
 
 const INITIAL_DATA: ShipperFormData = {
     legalName: '', dbaName: '', ein: '', address: '', city: '', state: '', zip: '',
     contactName: '', contactEmail: '', contactPhone: '',
     commodityType: '', monthlyVolume: '', averageValue: '', preferredEquipment: [], password: '',
+    documents: { w9: undefined, creditApp: undefined, shippingAgreement: undefined },
 };
 
 export default function ShipperOnboardingPage() {
@@ -305,17 +312,34 @@ export default function ShipperOnboardingPage() {
                 return (
                     <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100 w-full max-w-2xl mx-auto">
                         <h2 className="text-2xl font-bold text-gray-900 mb-6">Upload Documents</h2>
-                        <p className="text-sm text-gray-600 mb-6">Required documents will be uploaded after account creation</p>
-                        <div className="space-y-4">
-                            {['W-9 Form', 'Credit Application', 'Signed Shipping Agreement'].map(doc => (
-                                <div
-                                    key={doc}
-                                    className="p-4 border border-dashed border-gray-300 rounded-xl flex items-center justify-between"
-                                >
-                                    <span className="font-bold text-gray-700">{doc}</span>
-                                    <span className="text-sm text-gray-500">Upload after registration</span>
-                                </div>
-                            ))}
+                        <p className="text-sm text-gray-600 mb-6">
+                            Please upload the required documents to complete your registration
+                        </p>
+                        <div className="space-y-6">
+                            <FileUpload
+                                label="W-9 Form"
+                                currentFileUrl={formData.documents?.w9}
+                                onUploadSuccess={(url) => setFormData(prev => ({
+                                    ...prev,
+                                    documents: { ...prev.documents, w9: url }
+                                }))}
+                            />
+                            <FileUpload
+                                label="Credit Application"
+                                currentFileUrl={formData.documents?.creditApp}
+                                onUploadSuccess={(url) => setFormData(prev => ({
+                                    ...prev,
+                                    documents: { ...prev.documents, creditApp: url }
+                                }))}
+                            />
+                            <FileUpload
+                                label="Signed Shipping Agreement"
+                                currentFileUrl={formData.documents?.shippingAgreement}
+                                onUploadSuccess={(url) => setFormData(prev => ({
+                                    ...prev,
+                                    documents: { ...prev.documents, shippingAgreement: url }
+                                }))}
+                            />
                         </div>
                         <div className="flex justify-between mt-10">
                             <button
@@ -401,8 +425,8 @@ export default function ShipperOnboardingPage() {
                                 <div key={label} className="flex items-center">
                                     <div
                                         className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${idx + 1 <= currentStep
-                                                ? 'bg-green-600 text-white'
-                                                : 'bg-gray-200 text-gray-500'
+                                            ? 'bg-green-600 text-white'
+                                            : 'bg-gray-200 text-gray-500'
                                             }`}
                                     >
                                         {idx + 1}

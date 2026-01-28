@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { OnboardingStep } from '@/types';
 import { analyzeProfile } from '@/lib/gemini';
+import { FileUpload } from '@/components/FileUpload';
 
 interface CarrierFormData {
     dotNumber: string;
@@ -22,6 +23,11 @@ interface CarrierFormData {
     equipmentTypes: string[];
     preferredLanes: string[];
     password: string;
+    documents: {
+        w9?: string;
+        coi?: string;
+        mcAuthority?: string;
+    };
 }
 
 const INITIAL_DATA: CarrierFormData = {
@@ -29,6 +35,7 @@ const INITIAL_DATA: CarrierFormData = {
     ein: '', address: '', city: '', state: '', zip: '',
     contactName: '', contactEmail: '', contactPhone: '',
     equipmentTypes: [], preferredLanes: [], password: '',
+    documents: { w9: undefined, coi: undefined, mcAuthority: undefined },
 };
 
 export default function CarrierOnboardingPage() {
@@ -372,17 +379,34 @@ export default function CarrierOnboardingPage() {
                 return (
                     <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100 w-full max-w-2xl mx-auto">
                         <h2 className="text-2xl font-bold text-gray-900 mb-6">Upload Documents</h2>
-                        <p className="text-sm text-gray-600 mb-6">Required documents will be uploaded after account creation</p>
-                        <div className="space-y-4">
-                            {['W-9 Form', 'Active COI (Certificate of Insurance)', 'MC Authority Letter'].map(doc => (
-                                <div
-                                    key={doc}
-                                    className="p-4 border border-dashed border-gray-300 rounded-xl flex items-center justify-between"
-                                >
-                                    <span className="font-bold text-gray-700">{doc}</span>
-                                    <span className="text-sm text-gray-500">Upload after registration</span>
-                                </div>
-                            ))}
+                        <p className="text-sm text-gray-600 mb-6">
+                            Please upload the required documents to complete your registration
+                        </p>
+                        <div className="space-y-6">
+                            <FileUpload
+                                label="W-9 Form"
+                                currentFileUrl={formData.documents?.w9}
+                                onUploadSuccess={(url) => setFormData(prev => ({
+                                    ...prev,
+                                    documents: { ...prev.documents, w9: url }
+                                }))}
+                            />
+                            <FileUpload
+                                label="Certificate of Insurance (COI)"
+                                currentFileUrl={formData.documents?.coi}
+                                onUploadSuccess={(url) => setFormData(prev => ({
+                                    ...prev,
+                                    documents: { ...prev.documents, coi: url }
+                                }))}
+                            />
+                            <FileUpload
+                                label="MC Authority Letter"
+                                currentFileUrl={formData.documents?.mcAuthority}
+                                onUploadSuccess={(url) => setFormData(prev => ({
+                                    ...prev,
+                                    documents: { ...prev.documents, mcAuthority: url }
+                                }))}
+                            />
                         </div>
                         <div className="flex justify-between mt-10">
                             <button
@@ -470,8 +494,8 @@ export default function CarrierOnboardingPage() {
                                 <div key={label} className="flex items-center">
                                     <div
                                         className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${idx <= currentStep
-                                                ? 'bg-blue-600 text-white'
-                                                : 'bg-gray-200 text-gray-500'
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-gray-200 text-gray-500'
                                             }`}
                                     >
                                         {idx + 1}
