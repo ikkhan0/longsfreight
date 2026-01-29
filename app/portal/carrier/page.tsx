@@ -128,7 +128,7 @@ export default function CarrierOnboardingPage() {
                     <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100 max-w-2xl mx-auto w-full">
                         <h2 className="text-2xl font-bold text-gray-900 mb-6">Motor Carrier Verification</h2>
                         <form onSubmit={handleVerify} className="space-y-6">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-bold text-gray-600 mb-2">DOT #</label>
                                     <input
@@ -249,7 +249,7 @@ export default function CarrierOnboardingPage() {
                                         required
                                     />
                                 </div>
-                                <div className="grid grid-cols-3 gap-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                     <div className="col-span-1">
                                         <input
                                             name="city"

@@ -7,8 +7,8 @@ export default function AboutPage() {
         <div className="min-h-screen bg-gray-50">
             <Navigation />
 
-            <div className="max-w-7xl mx-auto px-4 py-16">
-                <h1 className="text-5xl font-bold text-center mb-16 text-gray-900">About LFL Logistics</h1>
+            <div className="max-w-7xl mx-auto px-4 py-10 md:py-16">
+                <h1 className="text-3xl md:text-5xl font-bold text-center mb-10 md:mb-16 text-gray-900">About LFL Logistics</h1>
 
                 <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
                     <div>

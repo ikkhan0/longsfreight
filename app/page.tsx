@@ -1,58 +1,20 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import Navigation from '@/components/Navigation';
 
 export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Navigation */}
-      <header className="bg-white shadow-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center">
-              <Link href="/" className="flex items-center">
-                <Image
-                  src="/images/logo.png"
-                  alt="LFL Logistics Logo"
-                  width={180}
-                  height={60}
-                  className="h-14 w-auto"
-                  priority
-                />
-              </Link>
-            </div>
+      <Navigation />
 
-            <nav style={{ display: 'flex', gap: '2rem', alignItems: 'center' }} className="hidden md:flex">
-              <Link href="/" style={{ color: '#003366', fontWeight: '600', fontSize: '14px', textTransform: 'uppercase', transition: 'color 0.3s' }} className="hover:text-[#0077be]">Home</Link>
-              <Link href="/services" style={{ color: '#003366', fontWeight: '600', fontSize: '14px', textTransform: 'uppercase', transition: 'color 0.3s' }} className="hover:text-[#0077be]">Services</Link>
-              <Link href="/about" style={{ color: '#003366', fontWeight: '600', fontSize: '14px', textTransform: 'uppercase', transition: 'color 0.3s' }} className="hover:text-[#0077be]">About Us</Link>
-              <Link href="/portal/carrier" style={{ color: '#003366', fontWeight: '600', fontSize: '14px', textTransform: 'uppercase', transition: 'color 0.3s' }} className="hover:text-[#0077be]" target="_blank">Carrier Portal</Link>
-              <Link href="/contact" style={{ color: '#003366', fontWeight: '600', fontSize: '14px', textTransform: 'uppercase', transition: 'color 0.3s' }} className="hover:text-[#0077be]">Contact</Link>
-            </nav>
-
-            <div className="hidden md:flex items-center space-x-4">
-              <Link
-                href="/portal/carrier"
-                className="px-4 py-2 text-[#0077be] border-2 border-[#0077be] rounded-full font-bold hover:bg-[#0077be] hover:text-white transition"
-              >
-                Carrier Portal
-              </Link>
-              <Link
-                href="/portal/shipper"
-                className="px-4 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700"
-              >
-                Shipper Portal
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
 
       {/* Hero Section */}
       <section className="relative h-[600px] flex items-center justify-center bg-gradient-to-br from-[#003366] via-[#0077be] to-gray-900">
         <div className="absolute inset-0 bg-[url('/images/banner_home.jpg')] bg-cover bg-center opacity-20"></div>
 
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-6 animate-fade-in">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 animate-fade-in">
             Reliable Transport & Logistics Solutions
           </h1>
           <p className="text-xl md:text-2xl text-gray-200 mb-8">
