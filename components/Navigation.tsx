@@ -23,7 +23,7 @@ export default function Navigation() {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className="hidden md:flex gap-8 items-center">
+                    <nav className="desktop-nav gap-8 items-center">
                         <Link href="/" className="text-[#003366] font-semibold text-sm uppercase hover:text-[#0077be] transition-colors">Home</Link>
                         <Link href="/services" className="text-[#003366] font-semibold text-sm uppercase hover:text-[#0077be] transition-colors">Services</Link>
                         <Link href="/about" className="text-[#003366] font-semibold text-sm uppercase hover:text-[#0077be] transition-colors">About Us</Link>
@@ -32,7 +32,7 @@ export default function Navigation() {
                     </nav>
 
                     {/* Desktop CTA Buttons */}
-                    <div className="hidden md:flex items-center space-x-4">
+                    <div className="desktop-nav items-center space-x-4">
                         <Link href="/portal/carrier" target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-[#0077be] border-2 border-[#0077be] rounded-full font-bold hover:bg-[#0077be] hover:text-white transition">
                             Carrier Portal
                         </Link>
@@ -42,7 +42,7 @@ export default function Navigation() {
                     </div>
 
                     {/* Mobile Menu Button */}
-                    <div className="md:hidden flex items-center">
+                    <div className="mobile-menu-btn flex items-center">
                         <button
                             onClick={() => setIsOpen(!isOpen)}
                             className="text-[#003366] hover:text-[#0077be] focus:outline-none"

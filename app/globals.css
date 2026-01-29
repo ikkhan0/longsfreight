@@ -74,4 +74,22 @@
       transform: scale(1.1);
     }
   }
+  
+  /* Fallback Responsive Classes */
+  .desktop-nav {
+    display: none;
+  }
+  
+  .mobile-menu-btn {
+    display: flex;
+  }
+  
+  @media (min-width: 768px) {
+    .desktop-nav {
+      display: flex;
+    }
+    .mobile-menu-btn {
+      display: none;
+    }
+  }
 }
