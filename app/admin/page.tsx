@@ -27,6 +27,11 @@ interface Carrier {
     state: string;
     status: string;
     createdAt: string;
+    documents?: {
+        w9?: string;
+        coi?: string;
+        mcAuthority?: string;
+    };
 }
 
 interface Shipper {
@@ -38,6 +43,17 @@ interface Shipper {
     state: string;
     status: string;
     createdAt: string;
+    documents?: {
+        w9?: string;
+        creditApp?: string;
+        shippingAgreement?: string;
+    };
+}
+
+interface DocumentModalData {
+    type: 'carrier' | 'shipper';
+    companyName: string;
+    documents: Carrier['documents'] | Shipper['documents'];
 }
 
 export default function AdminDashboard() {
@@ -48,6 +64,7 @@ export default function AdminDashboard() {
     const [shippers, setShippers] = useState<Shipper[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'carriers' | 'shippers'>('carriers');
+    const [documentModal, setDocumentModal] = useState<DocumentModalData | null>(null);
 
     useEffect(() => {
         if (status === 'unauthenticated') {
@@ -88,6 +105,92 @@ export default function AdminDashboard() {
         } catch (error) {
             console.error('Failed to update status:', error);
         }
+    };
+
+    const getDocumentCount = (documents: Carrier['documents'] | Shipper['documents'] | undefined) => {
+        if (!documents) return { uploaded: 0, total: 0 };
+        const values = Object.values(documents);
+        const uploaded = values.filter(doc => doc).length;
+        const total = values.length;
+        return { uploaded, total };
+    };
+
+    const openDocumentModal = (type: 'carrier' | 'shipper', companyName: string, documents: Carrier['documents'] | Shipper['documents']) => {
+        setDocumentModal({ type, companyName, documents });
+    };
+
+    const DocumentModal = () => {
+        if (!documentModal) return null;
+
+        const { type, companyName, documents } = documentModal;
+
+        const documentList = type === 'carrier' ? [
+            { key: 'w9', label: 'W-9 Form', url: (documents as Carrier['documents'])?.w9 },
+            { key: 'coi', label: 'Certificate of Insurance', url: (documents as Carrier['documents'])?.coi },
+            { key: 'mcAuthority', label: 'MC Authority', url: (documents as Carrier['documents'])?.mcAuthority },
+        ] : [
+            { key: 'w9', label: 'W-9 Form', url: (documents as Shipper['documents'])?.w9 },
+            { key: 'creditApp', label: 'Credit Application', url: (documents as Shipper['documents'])?.creditApp },
+            { key: 'shippingAgreement', label: 'Shipping Agreement', url: (documents as Shipper['documents'])?.shippingAgreement },
+        ];
+
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setDocumentModal(null)}>
+                <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                    <div className="p-6 border-b sticky top-0 bg-white">
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-2xl font-bold text-gray-900">{companyName}</h2>
+                            <button onClick={() => setDocumentModal(null)} className="text-gray-500 hover:text-gray-700 text-2xl">
+                                ×
+                            </button>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">
+                            {type === 'carrier' ? 'Carrier' : 'Shipper'} Documents
+                        </p>
+                    </div>
+
+                    <div className="p-6">
+                        <div className="space-y-4">
+                            {documentList.map(({ key, label, url }) => (
+                                <div key={key} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                                    <div className="flex items-center space-x-3">
+                                        {url ? (
+                                            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            </div>
+                                        ) : (
+                                            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                                                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <div className="font-bold text-gray-900">{label}</div>
+                                            <div className="text-xs text-gray-500">
+                                                {url ? 'Uploaded' : 'Not uploaded'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {url && (
+                                        <a
+                                            href={url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-bold text-sm"
+                                        >
+                                            View/Download
+                                        </a>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     const handleDelete = async (id: string, type: 'carrier' | 'shipper') => {
@@ -161,8 +264,8 @@ export default function AdminDashboard() {
                             <button
                                 onClick={() => setActiveTab('carriers')}
                                 className={`px-6 py-4 font-bold ${activeTab === 'carriers'
-                                        ? 'border-b-2 border-blue-600 text-blue-600'
-                                        : 'text-gray-500'
+                                    ? 'border-b-2 border-blue-600 text-blue-600'
+                                    : 'text-gray-500'
                                     }`}
                             >
                                 Carriers ({carriers.length})
@@ -170,8 +273,8 @@ export default function AdminDashboard() {
                             <button
                                 onClick={() => setActiveTab('shippers')}
                                 className={`px-6 py-4 font-bold ${activeTab === 'shippers'
-                                        ? 'border-b-2 border-green-600 text-green-600'
-                                        : 'text-gray-500'
+                                    ? 'border-b-2 border-green-600 text-green-600'
+                                    : 'text-gray-500'
                                     }`}
                             >
                                 Shippers ({shippers.length})
@@ -191,6 +294,7 @@ export default function AdminDashboard() {
                                             <th className="pb-4 font-bold">Location</th>
                                             <th className="pb-4 font-bold">Status</th>
                                             <th className="pb-4 font-bold">Registered</th>
+                                            <th className="pb-4 font-bold">Documents</th>
                                             <th className="pb-4 font-bold">Actions</th>
                                         </tr>
                                     </thead>
@@ -216,10 +320,10 @@ export default function AdminDashboard() {
                                                         value={carrier.status}
                                                         onChange={(e) => handleStatusChange(carrier._id, e.target.value, 'carrier')}
                                                         className={`px-3 py-1 rounded-full text-xs font-bold ${carrier.status === 'approved'
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : carrier.status === 'pending'
-                                                                    ? 'bg-yellow-100 text-yellow-800'
-                                                                    : 'bg-red-100 text-red-800'
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : carrier.status === 'pending'
+                                                                ? 'bg-yellow-100 text-yellow-800'
+                                                                : 'bg-red-100 text-red-800'
                                                             }`}
                                                     >
                                                         <option value="pending">Pending</option>
@@ -229,6 +333,19 @@ export default function AdminDashboard() {
                                                 </td>
                                                 <td className="py-4 text-sm text-gray-600">
                                                     {format(new Date(carrier.createdAt), 'MMM d, yyyy')}
+                                                </td>
+                                                <td className="py-4">
+                                                    {(() => {
+                                                        const { uploaded, total } = getDocumentCount(carrier.documents);
+                                                        return (
+                                                            <button
+                                                                onClick={() => openDocumentModal('carrier', carrier.legalName, carrier.documents)}
+                                                                className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs font-bold transition-colors"
+                                                            >
+                                                                View ({uploaded}/{total})
+                                                            </button>
+                                                        );
+                                                    })()}
                                                 </td>
                                                 <td className="py-4">
                                                     <button
@@ -258,6 +375,7 @@ export default function AdminDashboard() {
                                             <th className="pb-4 font-bold">Location</th>
                                             <th className="pb-4 font-bold">Status</th>
                                             <th className="pb-4 font-bold">Registered</th>
+                                            <th className="pb-4 font-bold">Documents</th>
                                             <th className="pb-4 font-bold">Actions</th>
                                         </tr>
                                     </thead>
@@ -279,10 +397,10 @@ export default function AdminDashboard() {
                                                         value={shipper.status}
                                                         onChange={(e) => handleStatusChange(shipper._id, e.target.value, 'shipper')}
                                                         className={`px-3 py-1 rounded-full text-xs font-bold ${shipper.status === 'approved'
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : shipper.status === 'pending'
-                                                                    ? 'bg-yellow-100 text-yellow-800'
-                                                                    : 'bg-red-100 text-red-800'
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : shipper.status === 'pending'
+                                                                ? 'bg-yellow-100 text-yellow-800'
+                                                                : 'bg-red-100 text-red-800'
                                                             }`}
                                                     >
                                                         <option value="pending">Pending</option>
@@ -292,6 +410,19 @@ export default function AdminDashboard() {
                                                 </td>
                                                 <td className="py-4 text-sm text-gray-600">
                                                     {format(new Date(shipper.createdAt), 'MMM d, yyyy')}
+                                                </td>
+                                                <td className="py-4">
+                                                    {(() => {
+                                                        const { uploaded, total } = getDocumentCount(shipper.documents);
+                                                        return (
+                                                            <button
+                                                                onClick={() => openDocumentModal('shipper', shipper.legalName, shipper.documents)}
+                                                                className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs font-bold transition-colors"
+                                                            >
+                                                                View ({uploaded}/{total})
+                                                            </button>
+                                                        );
+                                                    })()}
                                                 </td>
                                                 <td className="py-4">
                                                     <button
@@ -313,6 +444,9 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
+
+            {/* Document Modal */}
+            <DocumentModal />
         </div>
     );
 }
