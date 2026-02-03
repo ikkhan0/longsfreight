@@ -27,7 +27,6 @@ export default function Navigation() {
                         <Link href="/" className="text-[#003366] font-semibold text-sm uppercase hover:text-[#0077be] transition-colors">Home</Link>
                         <Link href="/services" className="text-[#003366] font-semibold text-sm uppercase hover:text-[#0077be] transition-colors">Services</Link>
                         <Link href="/about" className="text-[#003366] font-semibold text-sm uppercase hover:text-[#0077be] transition-colors">About Us</Link>
-                        <Link href="/portal/carrier" className="text-[#003366] font-semibold text-sm uppercase hover:text-[#0077be] transition-colors" target="_blank" rel="noopener noreferrer">Carrier Portal</Link>
                         <Link href="/contact" className="text-[#003366] font-semibold text-sm uppercase hover:text-[#0077be] transition-colors">Contact</Link>
                     </nav>
 
